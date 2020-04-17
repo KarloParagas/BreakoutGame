@@ -53,8 +53,13 @@ public class GameEngine extends SurfaceView implements Runnable {
     //This helps calculate the frame rate per second (fps)
     private long timeThisFrame;
 
+    //Declare a field for the paddle
+    Paddle paddle;
+
     /**
      * This constructor is called when the object is first created
+     * @param x comes from MainActivity class' onCreate method when it initialized gameEngine,
+     * @param y comes from MainActivity class' onCreate method when it initialized gameEngine
      */
     public GameEngine(Context context, int x, int y) {
         //This calls the default constructor (SurfaceView) to setup the rest of the object
@@ -69,6 +74,9 @@ public class GameEngine extends SurfaceView implements Runnable {
         //Initialize screenX and screenY using the x and y parameters passed from MainActivity
         screenX = x;
         screenY = y;
+
+        //Initialize the paddle
+        paddle = new Paddle(screenX, screenY);
     }
 
     /**
@@ -153,7 +161,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     private void update() {
-
+        //Move the paddle by calling it's update method and passing the frame rate
+        paddle.update(fps);
     }
 
     /**
@@ -170,7 +179,10 @@ public class GameEngine extends SurfaceView implements Runnable {
             //      everything that was there previously
             canvas.drawColor(Color.argb(255, 26, 128, 182));
 
-            //Draw everything to the screen
+            //Draw everything to the screen\\
+            //Draw the paddle
+            canvas.drawRect(paddle.getRectangle(), paint);
+
             //Show everything that's been drawn
             holder.unlockCanvasAndPost(canvas);
         }
