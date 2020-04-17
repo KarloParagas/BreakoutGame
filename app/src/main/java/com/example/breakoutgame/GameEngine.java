@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -34,7 +35,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     */
 
     //This will only be used internally inside the Thread, and will
-    //point out weather the game is running or not
+    //point out weather the game is running or not. By default, it's should be set to true
+    //unless an event happens that starts the game.
     private boolean paused = true;
 
     //Declare a canvas and a paint object
@@ -186,5 +188,44 @@ public class GameEngine extends SurfaceView implements Runnable {
             //Show everything that's been drawn
             holder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    /**
+     * This method is called whenever the player touches the screen.
+     * Note: The SurfaceView class implements onTouchListener so this onTouchEvent can
+     * be overridden be used to detect screen touches.
+     * @param motionEvent
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+            //This case occurs when the player touches the screen
+            case MotionEvent.ACTION_DOWN:
+                //Set the game's state to resume because the case statement means
+                //"the player touched the screen, resume/start the game". This will
+                //also execute the update() method, which is in an if statement in the
+                //run() method
+                paused = false;
+
+                //Get the x point of the MotionEvent and see if it's greater
+                //than half of the width of the screen. If the condition is true,
+                //that means the player has touched the right hand side of the screen
+                if (motionEvent.getX() > screenX / 2) {
+                    //Move the paddle to the right
+                    paddle.setMovement(paddle.RIGHT);
+                }
+                else {
+                    //Move the paddle to the left
+                    paddle.setMovement(paddle.LEFT);
+                }
+                break;
+
+            //This case occurs when the player removes their finger off of the screen
+            case MotionEvent.ACTION_UP:
+                //Stop the paddle
+                paddle.setMovement(paddle.STOPPED);
+                break;
+        }
+        return true;
     }
 }
