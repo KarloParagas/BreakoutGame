@@ -107,7 +107,7 @@ public class Ball {
     public void reset(int x, int y) {
         //Place the ball at the bottom center of the screen
         ball.left = x / 2;
-        ball.top = y - 20;
+        ball.top = y - 25;
 
         //Place the ball bottom right of the screen
         ball.right = x / 2 + ballWidth;

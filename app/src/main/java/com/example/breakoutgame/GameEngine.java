@@ -55,8 +55,11 @@ public class GameEngine extends SurfaceView implements Runnable {
     //This helps calculate the frame rate per second (fps)
     private long timeThisFrame;
 
-    //Declare a field for the paddle
+    //Declare the paddle
     Paddle paddle;
+
+    //Declare the ball
+    Ball ball;
 
     /**
      * This constructor is called when the object is first created
@@ -79,6 +82,12 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         //Initialize the paddle
         paddle = new Paddle(screenX, screenY);
+
+        //Initialize the ball
+        ball = new Ball();
+
+        //Reset the position of the ball
+        restart();
     }
 
     /**
@@ -165,6 +174,17 @@ public class GameEngine extends SurfaceView implements Runnable {
     private void update() {
         //Move the paddle by calling it's update method and passing the frame rate
         paddle.update(fps);
+
+        //Move the ball by calling it's update method and passing the frame rate
+        ball.update(fps);
+    }
+
+    /**
+     * This method will be used to restart/reset the ball, score, etc
+     */
+    public void restart() {
+        //Put the ball back to it's starting position
+        ball.reset(screenX, screenY);
     }
 
     /**
@@ -179,11 +199,18 @@ public class GameEngine extends SurfaceView implements Runnable {
             //Draws the background color
             //Note: This is done in the beginning of every drawing process so it gets rid of
             //      everything that was there previously
-            canvas.drawColor(Color.argb(255, 26, 128, 182));
+            canvas.drawColor(Color.argb(255, 0, 0, 0));
+
+            //Choose the brush color for the drawing
+            //Changes the drawing color
+            paint.setColor(Color.argb(255, 255, 255, 255));
 
             //Draw everything to the screen\\
             //Draw the paddle
             canvas.drawRect(paddle.getRectangle(), paint);
+
+            //Draw the ball
+            canvas.drawRect(ball.getBall(), paint);
 
             //Show everything that's been drawn
             holder.unlockCanvasAndPost(canvas);

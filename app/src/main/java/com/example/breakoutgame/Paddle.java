@@ -34,7 +34,7 @@ public class Paddle {
 
         //Start the paddle in the bottom center
         x = screenX / 2;
-        float y = screenY - 25;
+        float y = screenY - 20;
         //Note: If 20 isn't subtracted from screenY, the paddle will start offscreen
 
         //Initialize the paddle using the height and length specified above
