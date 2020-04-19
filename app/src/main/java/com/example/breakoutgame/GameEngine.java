@@ -223,7 +223,7 @@ public class GameEngine extends SurfaceView implements Runnable {
             //This case occurs when the player removes their finger off of the screen
             case MotionEvent.ACTION_UP:
                 //Stop the paddle
-                paddle.setMovement(paddle.STOPPED);
+                paddle.setMovement(paddle.STOP);
                 break;
         }
         return true;

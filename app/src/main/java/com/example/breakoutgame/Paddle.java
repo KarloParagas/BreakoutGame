@@ -16,12 +16,12 @@ public class Paddle {
     private float paddleSpeed;
 
     //Directions the paddle can move
-    final int STOPPED = 0;
+    final int STOP = 0;
     final int LEFT = 1;
     final int RIGHT = 2;
 
     //This keeps track of which way the paddle is moving, which uses the fields above
-    private int paddleMovement = STOPPED;
+    private int paddleMovement = STOP;
 
     /**
      * This is the constructor for the paddle. This is called when the key word "new" is used.
