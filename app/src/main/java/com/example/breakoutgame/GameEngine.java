@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -181,6 +182,82 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         //Move the ball by calling it's update method and passing the frame rate
         ball.update(fps);
+
+        //Check for ball and brick collision by looping through the bricks array\\
+        for (int i = 0; i < brickCount; i++) {
+            //If the brick is present/visible
+            if (bricks[i].getBrickVisibility()) {
+                //If brick and ball object intersects
+                if (RectF.intersects(bricks[i].getBrick(), ball.getBall())) {
+                    //Remove that brick
+                    bricks[i].removeBrick();
+
+                    //Reverse the ball's velocity simulating collision and bounce back
+                    ball.reverseYVelocity();
+                }
+            }
+        }
+
+        //Check for ball and paddle collision\\
+        if (RectF.intersects(paddle.getPaddle(), ball.getBall())) {
+            //Set a random x velocity for the ball so it will go left or right
+            ball.setRandomXVelocity();
+
+            //Set a random y velocity for the ball
+            //Note: It's reverse so that means it's going to go up
+            ball.reverseYVelocity();
+
+            //Clear y obstacle so it doesn't get caught in a loop once
+            //it collides with the ball
+            ball.clearObstacleY(paddle.getPaddle().top - 5);
+        }
+
+        //Check for collision between the 4 walls of the screen\\
+        //If the ball hits the bottom of the screen (screenY)
+        if (ball.getBall().bottom > screenY) {
+            //Reverse the balls y velocity to move it back up
+            //since it hit the bottom of the screen
+            ball.reverseYVelocity();
+
+            //Clear y obstacle by bumping the ball 5 pixels up,
+            //so the ball avoids getting doesn't get stuck
+            ball.clearObstacleY(screenY - 5);
+        }
+
+        //If the ball hits the top of the screen
+        if (ball.getBall().top < 0) {
+            //Move the ball in the opposite direction
+            ball.reverseYVelocity();
+
+            //Clear the y obstacle so the ball doesn't get stuck
+            ball.clearObstacleY(10);
+            //Note: The value 10 is an arbitrary number, it just means
+            //it'll bump the ball 10 pixels to prevent getting stuck
+        }
+
+        //If the ball hits the left of the screen
+        if (ball.getBall().left < 0) {
+            //Move the ball in the opposite direction
+            ball.reverseXVelocity();
+
+            //Clear the y obstacle so the ball doesn't get stuck
+            ball.clearObstacleX(5);
+        }
+
+        //If the ball hits the right of the screen
+        /*
+            Note: screenX - 10 is needed because the ball is measured from the left hand side.
+                  So when the left hand pixel, is 10 pixels away, the right hand pixel will be
+                  just about touching the ball.
+         */
+
+        if (ball.getBall().right > screenX - 10) {
+            //Move the ball in the opposite direction
+            ball.reverseXVelocity();
+
+            //Clear the x obstacle so the ball doesn't get stuck
+            ball.clearObstacleX(screenX - 15);
+        }
     }
 
     /**
@@ -224,7 +301,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
             //Draw everything to the screen\\
             //Draw the paddle
-            canvas.drawRect(paddle.getRectangle(), paint);
+            canvas.drawRect(paddle.getPaddle(), paint);
 
             //Draw the ball
             canvas.drawRect(ball.getBall(), paint);
