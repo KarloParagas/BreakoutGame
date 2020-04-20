@@ -63,8 +63,12 @@ public class GameEngine extends SurfaceView implements Runnable {
     Ball ball;
 
     //Declare an array of bricks
-    Brick[] bricks = new Brick[100];
-    int brickCount = 0;
+    Brick[] bricks = new Brick[50];
+    int brickIndex = 0; //Keeps track of the total bricks in the array
+    int brickCount = 0; //Keeps track of how bricks left in the array
+
+    //Declare the lives
+    int lives = 3;
 
     /**
      * This constructor is called when the object is first created
@@ -184,7 +188,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         ball.update(fps);
 
         //Check for ball and brick collision by looping through the bricks array\\
-        for (int i = 0; i < brickCount; i++) {
+        for (int i = 0; i < brickIndex; i++) {
             //If the brick is present/visible
             if (bricks[i].getBrickVisibility()) {
                 //If brick and ball object intersects
@@ -194,6 +198,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 
                     //Reverse the ball's velocity simulating collision and bounce back
                     ball.reverseYVelocity();
+
+                    //Decrement the total count of bricks
+                    brickCount--;
                 }
             }
         }
@@ -222,6 +229,15 @@ public class GameEngine extends SurfaceView implements Runnable {
             //Clear y obstacle by bumping the ball 5 pixels up,
             //so the ball avoids getting doesn't get stuck
             ball.clearObstacleY(screenY - 5);
+
+            //Decrement lives
+            lives--;
+
+            //If the player hits 0 lives
+            if (lives == 0) {
+                paused = true;
+                restart();
+            }
         }
 
         //If the ball hits the top of the screen
@@ -250,7 +266,6 @@ public class GameEngine extends SurfaceView implements Runnable {
                   So when the left hand pixel, is 10 pixels away, the right hand pixel will be
                   just about touching the ball.
          */
-
         if (ball.getBall().right > screenX - 10) {
             //Move the ball in the opposite direction
             ball.reverseXVelocity();
@@ -258,24 +273,38 @@ public class GameEngine extends SurfaceView implements Runnable {
             //Clear the x obstacle so the ball doesn't get stuck
             ball.clearObstacleX(screenX - 15);
         }
+
+        //If the player destroys all of the bricks
+        if (brickCount == 0) {
+            paused = true;
+            restart();
+        }
     }
 
     /**
      * This method will be used to restart/reset the ball, score, etc
      */
     public void restart() {
+        //Reset lives
+        lives = 3;
+
         //Put the ball back to it's starting position
         ball.reset(screenX, screenY);
 
+        //Put the paddle back to it's starting position
+        paddle = new Paddle(screenX, screenY);
+
         //Specify the brick's size
-        int brickWidth = screenX / 16; //The brick's width will be 1/16th of the width of the screen
-        int brickHeight = screenY / 15; //The brick's height will be 1/15th of the height of the screen
+        int brickWidth = screenX / 10; //The brick's width will be 1/10th of the width of the screen
+        int brickHeight = screenY / 10; //The brick's height will be 1/10th of the height of the screen
 
         //Nested for loop to create a brick wall
+        brickIndex = 0;
         brickCount = 0;
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 16; col++) {
-                bricks[brickCount] = new Brick(row, col, brickWidth, brickHeight);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 10; col++) {
+                bricks[brickIndex] = new Brick(row, col, brickWidth, brickHeight);
+                brickIndex++;
                 brickCount++;
             }
         }
@@ -293,7 +322,7 @@ public class GameEngine extends SurfaceView implements Runnable {
             //Draws the background color
             //Note: This is done in the beginning of every drawing process so it gets rid of
             //      everything that was there previously
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
+            canvas.drawColor(Color.argb(255, 55, 55, 55));
 
             //Choose the brush color for the drawing
             //Changes the drawing color
@@ -307,16 +336,23 @@ public class GameEngine extends SurfaceView implements Runnable {
             canvas.drawRect(ball.getBall(), paint);
 
             //Change the brush color for before drawing the brick so it's not the same as the ball
-            paint.setColor(Color.argb(255, 204, 0, 0));
+            paint.setColor(Color.argb(255, 187, 0, 0));
 
             //For loop through the array of bricks from the restart() method
             //to draw the brick wall
-            for (int i = 0; i < brickCount; i++) {
+            for (int i = 0; i < brickIndex; i++) {
                 //If the brick is present/visible
                 if (bricks[i].getBrickVisibility()) {
                     canvas.drawRect(bricks[i].getBrick(), paint);
                 }
             }
+
+            //Choose the brush color to draw the HUD
+            paint.setColor(Color.argb(255, 255, 255, 255));
+
+            //Draw the score
+            paint.setTextSize(50);
+            canvas.drawText("Lives: " + lives, screenX - 180, 50, paint);
 
             //Show everything that's been drawn
             holder.unlockCanvasAndPost(canvas);
@@ -327,7 +363,6 @@ public class GameEngine extends SurfaceView implements Runnable {
      * This method is called whenever the player touches the screen.
      * Note: The SurfaceView class implements onTouchListener so this onTouchEvent can
      * be overridden be used to detect screen touches.
-     * @param motionEvent
      */
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
