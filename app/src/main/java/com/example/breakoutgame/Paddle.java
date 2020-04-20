@@ -4,7 +4,7 @@ import android.graphics.RectF;
 
 public class Paddle {
     //This is an object that holds four coordinates. (Ex. For a rectangle or square)
-    private RectF rectangle;
+    private RectF paddle;
 
     //This keeps track of the paddle length
     private float length;
@@ -39,7 +39,7 @@ public class Paddle {
         //Note: If 20 isn't subtracted from screenY, the paddle will start offscreen
 
         //Initialize the paddle using the height and length specified above
-        rectangle = new RectF(x, y, x + length, y + height);
+        paddle = new RectF(x, y, x + length, y + height);
         //Note: RectF(startPositionX, startPositionY, paddleDimensionX, paddleDimensionY)
 
         //Speed of the paddle movement
@@ -50,8 +50,8 @@ public class Paddle {
      * This method is used to pass the created rectangle in any other classes needed.
      * This method will ensure that the GameEngine class has the most up-to-date position.
      */
-    public RectF getRectangle() {
-        return rectangle; //Return the current state of the rectangle object
+    public RectF getPaddle() {
+        return paddle; //Return the current state of the paddle object
     }
 
     /**
@@ -81,7 +81,7 @@ public class Paddle {
 
         //Changing the left and right rectangle object coordinates
         //will update the position of the paddle
-        rectangle.left = x;
-        rectangle.right = x + length;
+        paddle.left = x;
+        paddle.right = x + length;
     }
 }
