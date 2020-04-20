@@ -274,6 +274,20 @@ public class GameEngine extends SurfaceView implements Runnable {
             ball.clearObstacleX(screenX - 15);
         }
 
+        //if the paddle hits the right side of the screen
+        if (paddle.getPaddle().right > screenX) {
+            //Stops the paddle from going off screen by setting it's movement to 0
+            //which is the number for the STOP variable in the paddle class
+            paddle.setMovement(0);
+        }
+
+        //If the paddle hits the left side of the screen
+        if (paddle.getPaddle().left < 0) {
+            //Stops the paddle from going off screen by setting it's movement to 0
+            //which is the number for the STOP variable in the paddle class
+            paddle.setMovement(0);
+        }
+
         //If the player destroys all of the bricks
         if (brickCount == 0) {
             paused = true;
