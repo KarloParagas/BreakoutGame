@@ -61,6 +61,10 @@ public class GameEngine extends SurfaceView implements Runnable {
     //Declare the ball
     Ball ball;
 
+    //Declare an array of bricks
+    Brick[] bricks = new Brick[100];
+    int brickCount = 0;
+
     /**
      * This constructor is called when the object is first created
      * @param x comes from MainActivity class' onCreate method when it initialized gameEngine,
@@ -185,6 +189,19 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void restart() {
         //Put the ball back to it's starting position
         ball.reset(screenX, screenY);
+
+        //Specify the brick's size
+        int brickWidth = screenX / 16; //The brick's width will be 1/16th of the width of the screen
+        int brickHeight = screenY / 15; //The brick's height will be 1/15th of the height of the screen
+
+        //Nested for loop to create a brick wall
+        brickCount = 0;
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 16; col++) {
+                bricks[brickCount] = new Brick(row, col, brickWidth, brickHeight);
+                brickCount++;
+            }
+        }
     }
 
     /**
@@ -203,7 +220,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
             //Choose the brush color for the drawing
             //Changes the drawing color
-            paint.setColor(Color.argb(255, 255, 255, 255));
+            paint.setColor(Color.argb(255, 0, 255, 0));
 
             //Draw everything to the screen\\
             //Draw the paddle
@@ -211,6 +228,18 @@ public class GameEngine extends SurfaceView implements Runnable {
 
             //Draw the ball
             canvas.drawRect(ball.getBall(), paint);
+
+            //Change the brush color for before drawing the brick so it's not the same as the ball
+            paint.setColor(Color.argb(255, 204, 0, 0));
+
+            //For loop through the array of bricks from the restart() method
+            //to draw the brick wall
+            for (int i = 0; i < brickCount; i++) {
+                //If the brick is present/visible
+                if (bricks[i].getBrickVisibility()) {
+                    canvas.drawRect(bricks[i].getBrick(), paint);
+                }
+            }
 
             //Show everything that's been drawn
             holder.unlockCanvasAndPost(canvas);
